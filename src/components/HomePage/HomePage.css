@@ -6,8 +6,8 @@
     justify-content: flex-start; /* Align content more to the top */
     height: 100vh;
     width: 100vw;
-    padding-top: 40px;  /* Add some padding at the top to position it properly */
     padding: 20px;
+    padding-top: 40px;  /* Add some padding at the top to position it properly */
 }
 
 /* Reset default margins and padding */
