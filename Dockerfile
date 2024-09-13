@@ -10,8 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --ignore-scripts
 
-# Copy the rest of the application code
-COPY . .
+# Copy only necessary directories and files
+COPY public ./public
+COPY src ./src
 
 # Build the app
 RUN npm run build
