@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Button from './common/Button';
-import Input from './common/Input';
-import ErrorMessage from './common/ErrorMessage';
-import useForm from './hooks/useForm'; // Import custom form hook
+import Button from '../common/Button';
+import Input from '../common/Input';
+import ErrorMessage from '../common/ErrorMessage';
+import useForm from '../hooks/useForm'; // Import custom form hook
 import './AuthPage.css';
 
 function RegisterPage() {

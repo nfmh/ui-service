@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Button from './common/Button';
+import Button from '../common/Button';
 import './HomePage.css';
 
 const HomePage = () => {
