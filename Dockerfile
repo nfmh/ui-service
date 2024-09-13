@@ -4,13 +4,11 @@ FROM node:18-alpine AS build
 # Set working directory
 WORKDIR /ui-service
 
-# Copy package.json and package-lock.json to the working directory
+# Install dependencies before copying the full source code to leverage Docker cache
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install --ignore-scripts
 
-# Copy only necessary directories and files
+# Copy only necessary directories and files to avoid cache invalidation when modifying source code
 COPY public ./public
 COPY src ./src
 
@@ -18,6 +16,8 @@ COPY src ./src
 ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build
 
+# Remove unnecessary node_modules to reduce image size
+RUN rm -rf node_modules
 
 # Stage 2 - The production environment
 FROM nginx:stable-alpine
@@ -34,8 +34,17 @@ RUN chown -R nginxuser:nginxgroup /usr/share/nginx/html
 # Expose port 80
 EXPOSE 80
 
+# Healthcheck for Nginx server
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://localhost/ || exit 1
+
 # Switch to the non-root user
 USER nginxuser
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
+
+# Dockerignore file for better caching
+# .dockerignore
+node_modules
+npm-debug.log
+.git

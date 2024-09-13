@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFound = () => (
@@ -6,6 +7,5 @@ const NotFound = () => (
     <Link to="/login">Go to Login</Link>
   </div>
 );
-
 
 export default NotFound;
