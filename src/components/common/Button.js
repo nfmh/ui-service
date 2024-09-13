@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Button.css'; // Import CSS for button styling
 
 const Button = ({ onClick, label, className }) => {
   return (
