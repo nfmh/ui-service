@@ -15,7 +15,9 @@ COPY public ./public
 COPY src ./src
 
 # Build the app
+ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build
+
 
 # Stage 2 - The production environment
 FROM nginx:stable-alpine

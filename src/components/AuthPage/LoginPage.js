@@ -20,7 +20,7 @@ function LoginPage() {
         setLoading(false);  // Remove loading state
         const token = res.data.token;
         if (token) {
-          localStorage.setItem('token', token);
+          document.cookie = `token=${token}; path=/; secure; HttpOnly; SameSite=Strict`;
           setMessage('Login successful!');
           navigate('/home');
         } else {
@@ -31,7 +31,7 @@ function LoginPage() {
         setLoading(false);  // Remove loading state
         setMessage('Login failed. Please check your credentials.');
       });
-  };
+  };  
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {

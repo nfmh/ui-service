@@ -18,11 +18,17 @@ const HomePage = () => {
         }
     }, [navigate]);
 
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      };
+      
     const fetchMoodInfo = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/mood`, { mood }, { // Use MOOD_API_URL for mood service
-                headers: { Authorization: `Bearer ${token}` }
+            const token = getCookie('token');
+            const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/mood`, { mood }, {
+              headers: { Authorization: `Bearer ${token}` }
             });
 
             if (response.data) {
