@@ -42,9 +42,3 @@ USER nginxuser
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
-
-# Dockerignore file for better caching
-# .dockerignore
-node_modules
-npm-debug.log
-.git
