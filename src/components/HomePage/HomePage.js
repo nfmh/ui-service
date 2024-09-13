@@ -73,8 +73,8 @@ const HomePage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {moodInfo.songs.map((song, index) => (
-                                <tr key={index} className="song-item">
+                            {moodInfo.songs.map((song) => (
+                                <tr key={song.id} className="song-item">
                                     <td>{song.title}</td>
                                     <td><a href={song.url} target="_blank" rel="noopener noreferrer">Play</a></td>
                                 </tr>
