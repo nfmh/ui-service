@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 const LoginPage = lazy(() => import('./components/AuthPage/LoginPage'));
 const RegisterPage = lazy(() => import('./components/AuthPage/RegisterPage'));
 const HomePage = lazy(() => import('./components/HomePage/HomePage'));
+const NotFound = lazy(() => import('./components/NotFound'));
 
 function App() {
   return (
