@@ -1,0 +1,51 @@
+name: CI/CD Frontend Service
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  build_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Node.js
+      uses:  actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    # - name: Run tests
+    #   run: npm run test -- --watchAll=false
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+      with:
+        args: >
+          -Dsonar.projectKey=nfmh_ui-service
+          -Dsonar.organization=nfmh
+          
+    
+    # Docker build step
+    - name: Build Docker image
+      run: docker build -t ui-service:1.0 .
+
+    # Trivy scan step
+    - name: Run Trivy vulnerability scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ui-service:1.0
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
+        exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
+
