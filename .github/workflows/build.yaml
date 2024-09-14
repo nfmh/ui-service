@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Node.js
-      uses:  actions/setup-node@v4
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
 
@@ -40,6 +40,10 @@ jobs:
           -Dsonar.projectKey=nfmh_ui-service
           -Dsonar.organization=nfmh
           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          -Dsonar.sources=src
+          -Dsonar.tests=src/__tests__
+          -Dsonar.test.inclusions=src/**/*.test.js
+          -Dsonar.coverage.exclusions=src/__tests__/**
 
     # Docker build step
     - name: Build Docker image
@@ -52,4 +56,4 @@ jobs:
         image-ref: ui-service:1.0
         format: 'table'
         severity: 'HIGH,CRITICAL'
-        exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
+        exit-code: '1'
