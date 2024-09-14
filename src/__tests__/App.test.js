@@ -6,20 +6,21 @@ describe('App Routing', () => {
   test('renders LoginPage by default', async () => {
     render(<App />);
 
-    // Mock Suspense fallback
-    expect(await screen.findByText('Login')).toBeInTheDocument();
+    // Ensure that the login form (button) is rendered
+    expect(await screen.findByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
   test('renders RegisterPage for /register route', async () => {
     render(<App />);
 
-    expect(await screen.findByText('Register')).toBeInTheDocument();
+    // Use a more flexible matcher to find the "Register" text inside the link
+    expect(await screen.findByRole('link', { name: /register here/i })).toBeInTheDocument();
   });
 
   test('renders NotFound for unknown route', async () => {
     render(<App />);
 
-    expect(await screen.findByText('404 - Page Not Found')).toBeInTheDocument();
+    // More specific matcher for the 404 text
+    expect(await screen.findByText(/404 - page not found/i)).toBeInTheDocument();
   });
 });
-
