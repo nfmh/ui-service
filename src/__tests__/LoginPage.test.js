@@ -1,6 +1,10 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import LoginPage from '../components/AuthPage/LoginPage';
+import axios from 'axios'; // Mock axios
+import '@testing-library/jest-dom';
+
+jest.mock('axios');
 
 describe('LoginPage', () => {
   test('renders the login form correctly', () => {
@@ -16,6 +20,9 @@ describe('LoginPage', () => {
   });
 
   test('displays an error message on failed login', async () => {
+    // Mock failed axios response
+    axios.post.mockRejectedValueOnce({});
+
     render(
       <Router>
         <LoginPage />
@@ -26,7 +33,6 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'wrongpassword' } });
     fireEvent.click(screen.getByText('Login'));
 
-    // Mocking an axios response failure would require a mock setup, here we are simplifying
     expect(await screen.findByText('Login failed. Please check your credentials.')).toBeInTheDocument();
   });
 });
