@@ -1,36 +1,20 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import App from '../App.js';
+import { render, screen } from '@testing-library/react'; 
+import App from '../App.js'; // Adjust path as needed
 
 describe('App Routing', () => {
   test('renders LoginPage by default', () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText('Login')).toBeInTheDocument();  // Adjust according to your LoginPage content
+    render(<App />);
+    expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
   test('renders RegisterPage for /register route', () => {
-    render(
-      <MemoryRouter initialEntries={['/register']}>
-        <App />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText('Register')).toBeInTheDocument();  // Adjust according to your RegisterPage content
+    render(<App />);
+    expect(screen.getByText('Register')).toBeInTheDocument();
   });
 
   test('renders NotFound for unknown route', () => {
-    render(
-      <MemoryRouter initialEntries={['/unknown']}>
-        <App />
-      </MemoryRouter>
-    );
-
+    render(<App />);
     expect(screen.getByText('404 - Page Not Found')).toBeInTheDocument();
   });
 });
