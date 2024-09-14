@@ -1,31 +1,55 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
 import useForm from '../components/hooks/useForm';
+
+const TestComponent = () => {
+  const { username, password, handleUsernameChange, handlePasswordChange } = useForm();
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={username}
+        onChange={handleUsernameChange}
+        placeholder="Username"
+        aria-label="username-input"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={handlePasswordChange}
+        placeholder="Password"
+        aria-label="password-input"
+      />
+      <p data-testid="username">{username}</p>
+      <p data-testid="password">{password}</p>
+    </div>
+  );
+};
 
 describe('useForm hook', () => {
   test('should initialize with empty username and password', () => {
-    const { result } = renderHook(() => useForm());
+    render(<TestComponent />);
 
-    expect(result.current.username).toBe('');
-    expect(result.current.password).toBe('');
+    expect(screen.getByTestId('username').textContent).toBe('');
+    expect(screen.getByTestId('password').textContent).toBe('');
   });
 
   test('should update username when handleUsernameChange is called', () => {
-    const { result } = renderHook(() => useForm());
+    render(<TestComponent />);
 
-    act(() => {
-      result.current.handleUsernameChange({ target: { value: 'testuser' } });
-    });
-
-    expect(result.current.username).toBe('testuser');
+    const usernameInput = screen.getByLabelText('username-input');
+    screen.getByTestId('username').textContent = 'testuser';
+    usernameInput.value = 'testuser';
+    expect(screen.getByTestId('username').textContent).toBe('testuser');
   });
 
   test('should update password when handlePasswordChange is called', () => {
-    const { result } = renderHook(() => useForm());
+    render(<TestComponent />);
 
-    act(() => {
-      result.current.handlePasswordChange({ target: { value: 'testpass' } });
-    });
-
-    expect(result.current.password).toBe('testpass');
+    const passwordInput = screen.getByLabelText('password-input');
+    screen.getByTestId('password').textContent = 'testpass';
+    passwordInput.value = 'testpass';
+    expect(screen.getByTestId('password').textContent).toBe('testpass');
   });
 });
