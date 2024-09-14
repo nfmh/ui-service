@@ -23,19 +23,21 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # - name: Run tests
-    #   run: npm run test -- --watchAll=false
+    # Run tests with coverage
+    - name: Run tests with coverage
+      run: npm test -- --coverage
 
+    # Include SonarCloud Scan step to use test coverage
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
           -Dsonar.projectKey=nfmh_ui-service
           -Dsonar.organization=nfmh
-          
-    
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
     # Docker build step
     - name: Build Docker image
       run: docker build -t ui-service:1.0 .
@@ -48,4 +50,3 @@ jobs:
         format: 'table'
         severity: 'HIGH,CRITICAL'
         exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
-
