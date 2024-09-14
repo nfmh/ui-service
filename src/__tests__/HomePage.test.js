@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react'; // Added fireEvent here
 import { BrowserRouter as Router } from 'react-router-dom';
 import HomePage from '../components/HomePage/HomePage';
 import React from 'react';
@@ -53,6 +53,7 @@ describe('HomePage', () => {
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'happy' } });
     fireEvent.click(screen.getByText('Get Mood Info'));
 
+    // Assert that the mood information is displayed
     expect(await screen.findByText('This is a test quote')).toBeInTheDocument();
     expect(screen.getByText('Test Song')).toBeInTheDocument();
     expect(screen.getByAltText('Mood')).toHaveAttribute('src', 'https://testurl.com/image.jpg');
