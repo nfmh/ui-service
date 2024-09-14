@@ -1,5 +1,7 @@
-const mockAxios = jest.createMockFromModule('axios');
-
-mockAxios.create = jest.fn(() => mockAxios);
-
-export default mockAxios;
+// __mocks__/axios.js
+const axios = {
+    post: jest.fn(() => Promise.resolve({ data: {} })),
+    get: jest.fn(() => Promise.resolve({ data: {} })),
+  };
+  export default axios;
+  
