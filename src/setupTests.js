@@ -7,7 +7,6 @@ import '@testing-library/jest-dom';
 
 // Mock MutationObserver to avoid the error in all tests
 class MutationObserver {
-    constructor(callback) {}
     disconnect() {}
     observe(element, initObject) {}
     takeRecords() { return []; }
