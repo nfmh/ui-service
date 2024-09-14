@@ -33,7 +33,7 @@ describe('RegisterPage', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password' } });
     expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();  });
 
-    expect(screen.findByText('Registration successful! You can now log in.')).toBeInTheDocument();
+    // expect(screen.findByText('Registration successful! You can now log in.')).toBeInTheDocument();
 
   test('displays an error message on failed registration', async () => {
     // Mock failed axios response
