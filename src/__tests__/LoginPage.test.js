@@ -2,6 +2,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import LoginPage from '../components/AuthPage/LoginPage';
+import React from 'react';
 import axios from 'axios'; // Mock axios
 jest.mock('axios');
 
