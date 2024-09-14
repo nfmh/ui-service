@@ -3,8 +3,7 @@ module.exports = {
       '^.+\\.jsx?$': 'babel-jest', // Transform JSX and JS files
     },
     moduleFileExtensions: ['js', 'jsx'],
-    transformIgnorePatterns: [
-      '/node_modules/(?!axios)', // Allow Jest to transform axios
-    ],
+    transformIgnorePatterns: ['/node_modules/(?!(axios)/)'], // Ensure axios is transformed
+    setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'], // This sets up test environments, if necessary
   };
   
