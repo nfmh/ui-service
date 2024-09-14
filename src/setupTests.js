@@ -5,8 +5,6 @@
 import '@testing-library/jest-dom';
 
 
-// setupTests.js
-
 // Mock MutationObserver to avoid the error in all tests
 class MutationObserver {
     constructor(callback) {}
