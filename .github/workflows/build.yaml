@@ -23,15 +23,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Verify Babel
-      run: npm ls babel-jest
-
-    # Run tests with coverage
     - name: Run tests with coverage
       run: npm test -- --coverage
-    
-    - name: Debug - List Coverage Files
-      run: ls -R coverage
+
+    # Fix lcov.info Paths
+    - name: Fix lcov.info Paths
+      run: sed -i 's|/home/runner/work/ui-service/ui-service|/github/workspace|g' coverage/lcov.info
 
     # Include SonarCloud Scan step to use test coverage
     - name: SonarCloud Scan
