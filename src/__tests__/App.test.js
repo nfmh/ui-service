@@ -20,7 +20,9 @@ describe('App Routing', () => {
   test('renders NotFound for unknown route', async () => {
     render(<App />);
 
-    // More specific matcher for the 404 text
-    expect(await screen.findByText(/404 - page not found/i)).toBeInTheDocument();
+    // Flexible matcher for the 404 text
+    expect(await screen.findByText((content, element) => {
+      return content.includes('404') && content.includes('Page Not Found');
+    })).toBeInTheDocument();
   });
 });
