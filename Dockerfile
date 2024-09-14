@@ -14,10 +14,7 @@ COPY src ./src
 
 # Build the app
 ENV NODE_OPTIONS=--openssl-legacy-provider
-RUN npm run build
-
-# Remove unnecessary node_modules to reduce image size
-RUN rm -rf node_modules
+RUN npm run build && rm -rf node_modules
 
 # Stage 2 - The production environment
 FROM nginx:stable-alpine
@@ -35,7 +32,7 @@ RUN chown -R nginxuser:nginxgroup /usr/share/nginx/html
 EXPOSE 80
 
 # Healthcheck for Nginx server
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD ["curl", "--fail", "http://localhost/",  "|| exit 1"]
 
 # Switch to the non-root user
 USER nginxuser
