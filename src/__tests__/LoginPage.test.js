@@ -14,9 +14,12 @@ describe('LoginPage', () => {
       </Router>
     );
 
+    // Check if username and password input fields are present
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByText('Login')).toBeInTheDocument();
+
+    // Check if the login button is present using `getByRole`
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
   test('displays an error message on failed login', async () => {
@@ -29,10 +32,14 @@ describe('LoginPage', () => {
       </Router>
     );
 
+    // Simulate typing into the input fields
     fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'testuser' } });
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'wrongpassword' } });
-    fireEvent.click(screen.getByText('Login'));
 
+    // Click the login button
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Expect the error message to appear
     expect(await screen.findByText('Login failed. Please check your credentials.')).toBeInTheDocument();
   });
 });
