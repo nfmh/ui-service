@@ -29,6 +29,9 @@ jobs:
     # Run tests with coverage
     - name: Run tests with coverage
       run: npm test -- --coverage
+    
+    - name: Debug - List Coverage Files
+      run: ls -R coverage
 
     # Include SonarCloud Scan step to use test coverage
     - name: SonarCloud Scan
