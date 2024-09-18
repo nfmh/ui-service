@@ -16,26 +16,11 @@ COPY src ./src
 ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build && rm -rf node_modules
 
-# Stage 2 - The production environment
-FROM nginx:stable-alpine
+# Create a non-root user and group
+RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 
-# Create a non-root user and group with specific UID and GID
-RUN addgroup -g 1001 -S nginxgroup && adduser -u 1001 -S nginxuser -G nginxgroup
-
-# Copy built React app from Stage 1
-COPY --from=build /ui-service/build /usr/share/nginx/html
-
-# Change ownership of the app directory to the non-root user
-RUN chown -R nginxuser:nginxgroup /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Healthcheck for Nginx server
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD ["curl", "--fail", "http://localhost/",  "|| exit 1"]
+# Change ownership of the app directory
+RUN chown -R appuser:appgroup /ui-service
 
 # Switch to the non-root user
-USER nginxuser
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+USER appuser
