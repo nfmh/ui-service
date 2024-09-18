@@ -8,6 +8,9 @@ WORKDIR /ui-service
 COPY package*.json ./
 RUN npm install --ignore-scripts
 
+# Override vulnerable 'path-to-regexp' dependency in case 'serve' is using it
+RUN npm install path-to-regexp@8.0.0 --save
+
 # Copy only necessary directories and files to avoid cache invalidation when modifying source code
 COPY public ./public
 COPY src ./src
@@ -19,14 +22,14 @@ RUN npm run build && rm -rf node_modules
 # Use a minimal image to serve the static files
 FROM node:18-alpine AS production
 
-# Set working directory
-WORKDIR /app
-
-# Install the latest secure version of 'serve'
+# Install the latest version of 'serve'
 RUN npm install -g serve@latest
 
-# Run 'npm audit' to ensure 'serve' does not have known vulnerabilities
+# Audit 'serve' dependencies for vulnerabilities
 RUN npm audit || echo "No critical vulnerabilities found in serve"
+
+# Set working directory
+WORKDIR /app
 
 # Copy the build output from the build stage
 COPY --from=build /ui-service/build ./build
