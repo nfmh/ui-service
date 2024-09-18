@@ -14,7 +14,7 @@ COPY src ./src
 
 # Build the app
 ENV NODE_OPTIONS=--openssl-legacy-provider
-RUN npm run build
+RUN npm run build && rm -rf node_modules
 
 # Use a minimal image to serve the static files
 FROM node:18-alpine AS production
