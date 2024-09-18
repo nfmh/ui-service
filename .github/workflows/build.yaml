@@ -1,0 +1,94 @@
+name: CI/CD Frontend Service
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  build_pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests with coverage
+      run: npm test -- --coverage
+
+    # Fix lcov.info Paths
+    - name: Fix lcov.info Paths
+      run: sed -i 's|/home/runner/work/ui-service/ui-service|/github/workspace|g' coverage/lcov.info
+
+    # Include SonarCloud Scan step to use test coverage
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=nfmh_ui-service
+          -Dsonar.organization=nfmh
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          -Dsonar.sources=src
+          -Dsonar.tests=src/__tests__
+          -Dsonar.test.inclusions=src/**/*.test.js
+          -Dsonar.coverage.exclusions=src/__tests__/**
+
+    #Login to GCP and authenticate with docker in order to push images
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - id: auth
+      name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: "projects/576501498801/locations/global/workloadIdentityPools/github-wi-pool/providers/github-provider"
+        service_account: "artifact-registry@corded-epigram-435910-d5.iam.gserviceaccount.com"
+        token_format: 'access_token'
+    
+    - uses: docker/login-action@v3
+      with:
+        registry: 'europe-west3-docker.pkg.dev'
+        username: 'oauth2accesstoken'
+        password: '${{ steps.auth.outputs.access_token }}'
+        
+
+    - name: Set DateTime as IMAGE_TAG
+      id: datetime
+      run: echo "DATETIME=$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
+    - name: Build Docker image
+      id: build-image
+      run: |
+        IMAGE_TAG=prod.${{ steps.datetime.outputs.DATETIME }}
+        docker build -t "${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" -f Dockerfile .
+        echo "IMAGE_NAME=${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
+    # Trivy scan step
+    - name: Run Trivy vulnerability scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ui-service:1.0
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
+        exit-code: '1'
+    
+    # Publish the Docker Image to GCP
+    - name: Push Docker image to Artifact registry
+      run: |
+        docker push "${{ steps.build-image.outputs.IMAGE_NAME }}"
+    
