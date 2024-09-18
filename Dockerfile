@@ -7,6 +7,9 @@ WORKDIR /ui-service
 # Install dependencies before copying the full source code to leverage Docker cache
 COPY package*.json ./
 
+# Clear the npm cache to avoid conflicts
+RUN npm cache clean --force
+
 # Install remaining dependencies
 RUN npm install --ignore-scripts
 
@@ -20,6 +23,9 @@ RUN npm run build && rm -rf node_modules
 
 # Use a minimal image to serve the static files
 FROM node:18-alpine AS production
+
+# Clear the npm cache again to avoid conflicts in the production image
+RUN npm cache clean --force
 
 # Install the latest version of 'serve' globally
 RUN npm install -g serve@latest
@@ -47,3 +53,6 @@ USER appuser
 
 # Expose the port on which the app will run
 EXPOSE 8080
+
+# Serve the static files using 'serve'
+CMD ["serve", "-s", "build", "-l", "8080"]
