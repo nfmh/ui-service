@@ -6,10 +6,9 @@ WORKDIR /ui-service
 
 # Install dependencies before copying the full source code to leverage Docker cache
 COPY package*.json ./
-RUN npm install --ignore-scripts
 
-# Override vulnerable 'path-to-regexp' dependency in case 'serve' is using it
-RUN npm install path-to-regexp@8.0.0 --save
+# Install remaining dependencies
+RUN npm install --ignore-scripts
 
 # Copy only necessary directories and files to avoid cache invalidation when modifying source code
 COPY public ./public
@@ -22,17 +21,20 @@ RUN npm run build && rm -rf node_modules
 # Use a minimal image to serve the static files
 FROM node:18-alpine AS production
 
-# Install the latest version of 'serve'
+# Install the latest version of 'serve' globally
 RUN npm install -g serve@latest
 
-# Audit 'serve' dependencies for vulnerabilities
-RUN npm audit || echo "No critical vulnerabilities found in serve"
+# Override vulnerable 'path-to-regexp' dependency after installing 'serve'
+RUN npm install path-to-regexp@8.0.0 --save
 
 # Set working directory
 WORKDIR /app
 
 # Copy the build output from the build stage
 COPY --from=build /ui-service/build ./build
+
+# Check if any vulnerabilities exist in 'serve' or other dependencies
+RUN npm audit || echo "No critical vulnerabilities found"
 
 # Create a non-root user and group
 RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
@@ -45,6 +47,3 @@ USER appuser
 
 # Expose the port on which the app will run
 EXPOSE 8080
-
-# Serve the static files using 'serve'
-CMD ["serve", "-s", "build", "-l", "8080"]
