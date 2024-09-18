@@ -30,9 +30,6 @@ RUN npm cache clean --force
 # Install the latest version of 'serve' globally
 RUN npm install -g serve@latest
 
-# Override vulnerable 'path-to-regexp' dependency after installing 'serve'
-RUN npm install path-to-regexp@8.0.0 --save
-
 # Set working directory
 WORKDIR /app
 
