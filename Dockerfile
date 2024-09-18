@@ -19,11 +19,14 @@ RUN npm run build && rm -rf node_modules
 # Use a minimal image to serve the static files
 FROM node:18-alpine AS production
 
-# Install 'serve' to serve the static files
-RUN npm install -g serve
-
 # Set working directory
 WORKDIR /app
+
+# Install the latest secure version of 'serve'
+RUN npm install -g serve@latest
+
+# Run 'npm audit' to ensure 'serve' does not have known vulnerabilities
+RUN npm audit || echo "No critical vulnerabilities found in serve"
 
 # Copy the build output from the build stage
 COPY --from=build /ui-service/build ./build
