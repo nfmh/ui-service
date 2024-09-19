@@ -6,11 +6,6 @@ WORKDIR /ui-service
 
 # Install dependencies before copying the full source code to leverage Docker cache
 COPY package*.json ./
-
-# Clear the npm cache to avoid conflicts
-RUN npm cache clean --force
-
-# Install remaining dependencies
 RUN npm install --ignore-scripts
 
 # Copy only necessary directories and files to avoid cache invalidation when modifying source code
@@ -21,35 +16,26 @@ COPY src ./src
 ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build && rm -rf node_modules
 
-# Use a minimal image to serve the static files
-FROM node:18-alpine AS production
+# Stage 2 - The production environment
+FROM nginx:stable-alpine
 
-# Clear the npm cache again to avoid conflicts in the production image
-RUN npm cache clean --force
+# Create a non-root user and group with specific UID and GID
+RUN addgroup -g 1001 -S nginxgroup && adduser -u 1001 -S nginxuser -G nginxgroup
 
-# Install the latest version of 'serve' globally
-RUN npm install -g serve@latest
+# Copy built React app from Stage 1
+COPY --from=build /ui-service/build /usr/share/nginx/html
 
-# Set working directory
-WORKDIR /app
+# Change ownership of the app directory to the non-root user
+RUN chown -R nginxuser:nginxgroup /usr/share/nginx/html
 
-# Copy the build output from the build stage
-COPY --from=build /ui-service/build ./build
+# Expose port 80
+EXPOSE 80
 
-# Check if any vulnerabilities exist in 'serve' or other dependencies
-RUN npm audit || echo "No critical vulnerabilities found"
-
-# Create a non-root user and group
-RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
-
-# Change ownership of the app directory
-RUN chown -R appuser:appgroup /app
+# Healthcheck for Nginx server
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD ["curl", "--fail", "http://localhost/",  "|| exit 1"]
 
 # Switch to the non-root user
-USER appuser
+USER nginxuser
 
-# Expose the port on which the app will run
-EXPOSE 8080
-
-# Serve the static files using 'serve'
-CMD ["serve", "-s", "build", "-l", "8080"]
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
