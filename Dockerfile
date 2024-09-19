@@ -32,8 +32,11 @@ RUN mkdir -p /var/cache/nginx/client_temp && \
 # Change ownership of the app directory to the non-root user
 RUN chown -R nginxuser:nginxgroup /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Update Nginx configuration to listen on port 8080
+RUN sed -i 's/listen       80;/listen       8080;/' /etc/nginx/conf.d/default.conf
+
+# Expose port 8080 instead of 80
+EXPOSE 8080
 
 # Switch to the non-root user
 USER nginxuser
