@@ -23,9 +23,16 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install dependencies
+    # ------------- TESTING ENVIRONMENT for Sonar -------------
+    # Step for testing environment (SonarCloud, unit tests)
+    - name: Set testing environment
+      run: cp .env.testing .env
+
+    # Install dependencies for tests
+    - name: Install dependencies for testing
       run: npm install
 
+    # Run tests with coverage
     - name: Run tests with coverage
       run: npm test -- --coverage
 
@@ -48,7 +55,9 @@ jobs:
           -Dsonar.test.inclusions=src/**/*.test.js
           -Dsonar.coverage.exclusions=src/__tests__/**
 
-    #Login to GCP and authenticate with docker in order to push images
+    # ------------- PRODUCTION ENVIRONMENT BUILD -------------
+
+    # Login to GCP and authenticate with Docker to push images
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
@@ -66,11 +75,11 @@ jobs:
         username: 'oauth2accesstoken'
         password: '${{ steps.auth.outputs.access_token }}'
         
-
     - name: Set DateTime as IMAGE_TAG
       id: datetime
       run: echo "DATETIME=$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
+    # Build Docker image for production
     - name: Build Docker image
       id: build-image
       run: |
@@ -86,9 +95,8 @@ jobs:
         format: 'table'
         severity: 'HIGH,CRITICAL'
         exit-code: '1'
-    
-    # Publish the Docker Image to GCP
-    - name: Push Docker image to Artifact registry
+
+    # Push the Docker image to Artifact Registry
+    - name: Push Docker image to Artifact Registry
       run: |
         docker push "${{ steps.build-image.outputs.IMAGE_NAME }}"
-    

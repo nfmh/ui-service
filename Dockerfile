@@ -12,6 +12,12 @@ RUN npm install --ignore-scripts
 COPY public ./public
 COPY src ./src
 
+# Copy the production environment file explicitly
+COPY .env.production .env 
+
+# Set the environment to production explicitly
+ENV NODE_ENV=production
+
 # Build the app
 ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build && rm -rf node_modules
