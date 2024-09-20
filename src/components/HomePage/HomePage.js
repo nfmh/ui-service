@@ -7,7 +7,10 @@ import './HomePage.css';
 const HomePage = () => {
     const [mood, setMood] = useState('');
     const [moodInfo, setMoodInfo] = useState({ quote: '', songs: [], imageUrl: '' });
+    const [songTitle, setSongTitle] = useState('');
+    const [songUrl, setSongUrl] = useState('');
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,13 +25,13 @@ const HomePage = () => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
-      };
-      
+    };
+
     const fetchMoodInfo = async () => {
         try {
             const token = getCookie('token');
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/mood`, { mood }, {
-              headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             if (response.data) {
@@ -52,6 +55,28 @@ const HomePage = () => {
         navigate('/login');
     };
 
+    const handleSongSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = getCookie('token');
+            const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
+            { mood: mood, title: songTitle, url: songUrl }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.status === 201) {
+                setMessage('New song added successfully.');
+                setError('');
+                setSongTitle('');
+                setSongUrl('');
+            } else {
+                setError('Error adding song.');
+            }
+        } catch (err) {
+            setError(err.response?.status === 404 ? 'Mood not found.' : 'Error adding song.');
+        }
+    };
+
     return (
         <div className="home-container">
             <Button onClick={handleLogout} label="Logout" className="logout-button" />
@@ -66,6 +91,7 @@ const HomePage = () => {
             </select>
             <Button onClick={fetchMoodInfo} label="Get Mood Info" className="home-button" />
             {error && <div className="home-message">{error}</div>}
+            {message && <div className="home-message success">{message}</div>}
             {moodInfo.quote && <div className="home-quote">{moodInfo.quote}</div>}
             {moodInfo.imageUrl && <img src={moodInfo.imageUrl} alt="Mood" className="home-image" />}
             {moodInfo.songs.length > 0 && (
@@ -89,6 +115,21 @@ const HomePage = () => {
                     </table>
                 </>
             )}
+
+            <div className="add-song-section">
+                <h2>Would you like to add a song?</h2>
+                <form onSubmit={handleSongSubmit}>
+                    <div className="form-group">
+                        <label>Song Title</label>
+                        <input type="text" value={songTitle} onChange={(e) => setSongTitle(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Song URL</label>
+                        <input type="text" value={songUrl} onChange={(e) => setSongUrl(e.target.value)} required />
+                    </div>
+                    <Button type="submit" label="Add Song" className="add-song-button" />
+                </form>
+            </div>
         </div>
     );
 };
