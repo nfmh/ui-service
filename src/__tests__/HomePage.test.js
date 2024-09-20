@@ -62,14 +62,14 @@ describe('HomePage', () => {
   test('submits new song and shows success message', async () => {
     // Mock successful axios response for song submission
     axios.post.mockResolvedValueOnce({
-      status: 201,
-      data: { message: 'Added new song' },
+        status: 201,
+        data: { message: 'Added new song' },
     });
 
     render(
-      <Router>
-        <HomePage />
-      </Router>
+        <Router>
+            <HomePage />
+        </Router>
     );
 
     // Simulate selecting a mood
@@ -80,18 +80,19 @@ describe('HomePage', () => {
     fireEvent.change(screen.getByLabelText('Song URL'), { target: { value: 'https://new-song-url.com' } });
 
     // Simulate form submission
-    fireEvent.click(screen.getByText('Would you like to add a song?'));
+    fireEvent.click(screen.getByText('Add Song'));
 
     // Assert that the correct POST request was made
     await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith(
-        `${process.env.REACT_APP_MOOD_API_URL}/song`,
-        { mood: 'happy', title: 'New Song', url: 'https://new-song-url.com' },
-        expect.any(Object) // We don't need to test the full headers object in this case
-      );
+        expect(axios.post).toHaveBeenCalledWith(
+            `${process.env.REACT_APP_MOOD_API_URL}/song`,
+            { mood: 'happy', title: 'New Song', url: 'https://new-song-url.com' },
+            expect.any(Object) // Headers object
+        );
     });
 
     // Assert success message is displayed
     expect(await screen.findByText('New song added successfully.')).toBeInTheDocument();
-  });
+});
+
 });

@@ -116,20 +116,33 @@ const HomePage = () => {
                 </>
             )}
 
-            <div className="add-song-section">
-                <h2>Would you like to add a song?</h2>
-                <form onSubmit={handleSongSubmit}>
-                    <div className="form-group">
-                        <label>Song Title</label>
-                        <input type="text" value={songTitle} onChange={(e) => setSongTitle(e.target.value)} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Song URL</label>
-                        <input type="text" value={songUrl} onChange={(e) => setSongUrl(e.target.value)} required />
-                    </div>
-                    <Button type="submit" label="Add Song" className="add-song-button" />
-                </form>
-            </div>
+        <div className="add-song-section">
+            <h2>Would you like to add a song?</h2>
+            <form onSubmit={handleSongSubmit}>
+                <div className="form-group">
+                    <label htmlFor="songTitle">Song Title</label>
+                    <input
+                        id="songTitle"
+                        type="text"
+                        value={songTitle}
+                        onChange={(e) => setSongTitle(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="songUrl">Song URL</label>
+                    <input
+                        id="songUrl"
+                        type="text"
+                        value={songUrl}
+                        onChange={(e) => setSongUrl(e.target.value)}
+                        required
+                    />
+                </div>
+                <Button type="submit" label="Add Song" className="add-song-button" />
+            </form>
+        </div>
+
         </div>
     );
 };
