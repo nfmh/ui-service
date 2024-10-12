@@ -23,7 +23,8 @@ describe('LoginPage', () => {
   });
 
   test('displays an error message on failed login', async () => {
-    // Mock failed axios response
+    // Mock failed axios response for CSRF and login
+    axios.get.mockResolvedValueOnce({ data: { csrf_token: 'mock-csrf-token' } });
     axios.post.mockRejectedValueOnce({});
 
     render(

@@ -34,7 +34,8 @@ describe('HomePage', () => {
   });
 
   test('fetches and displays mood information on button click', async () => {
-    // Mock successful axios response for mood info
+    // Mock successful axios response for mood info and CSRF
+    axios.get.mockResolvedValueOnce({ data: { csrf_token: 'mock-csrf-token' } });
     axios.post.mockResolvedValueOnce({
       data: {
         quote: 'This is a test quote',
@@ -61,15 +62,16 @@ describe('HomePage', () => {
 
   test('submits new song and shows success message', async () => {
     // Mock successful axios response for song submission
+    axios.get.mockResolvedValueOnce({ data: { csrf_token: 'mock-csrf-token' } });
     axios.post.mockResolvedValueOnce({
-        status: 201,
-        data: { message: 'Added new song' },
+      status: 201,
+      data: { message: 'Added new song' },
     });
 
     render(
-        <Router>
-            <HomePage />
-        </Router>
+      <Router>
+        <HomePage />
+      </Router>
     );
 
     // Simulate selecting a mood
@@ -84,15 +86,14 @@ describe('HomePage', () => {
 
     // Assert that the correct POST request was made
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith(
-            `${process.env.REACT_APP_MOOD_API_URL}/song`,
-            { mood: 'happy', title: 'New Song', url: 'https://new-song-url.com' },
-            expect.any(Object) // Headers object
-        );
+      expect(axios.post).toHaveBeenCalledWith(
+        `${process.env.REACT_APP_MOOD_API_URL}/song`,
+        { mood: 'happy', title: 'New Song', url: 'https://new-song-url.com' },
+        expect.any(Object) // Headers object
+      );
     });
 
     // Assert success message is displayed
     expect(await screen.findByText('New song added successfully.')).toBeInTheDocument();
-});
-
+  });
 });

@@ -17,10 +17,12 @@ describe('RegisterPage', () => {
 
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();  });
+    expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();
+  });
 
   test('displays a success message on successful registration', async () => {
-    // Mock successful axios response
+    // Mock CSRF and successful axios response
+    axios.get.mockResolvedValueOnce({ data: { csrf_token: 'mock-csrf-token' } });
     axios.post.mockResolvedValueOnce({});
 
     render(
@@ -31,12 +33,15 @@ describe('RegisterPage', () => {
 
     fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'newuser' } });
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password' } });
-    expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();  });
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
 
-    // expect(screen.findByText('Registration successful! You can now log in.')).toBeInTheDocument();
+    // Wait for success message
+    expect(await screen.findByText('Registration successful! You can now log in.')).toBeInTheDocument();
+  });
 
   test('displays an error message on failed registration', async () => {
     // Mock failed axios response
+    axios.get.mockResolvedValueOnce({ data: { csrf_token: 'mock-csrf-token' } });
     axios.post.mockRejectedValueOnce({});
 
     render(
@@ -49,6 +54,7 @@ describe('RegisterPage', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password' } });
     fireEvent.click(screen.getByRole('button', { name: /register/i }));
 
-    //expect(await screen.findByText('Registration failed. User might already exist.')).toBeInTheDocument();
+    // Expect error message to appear
+    expect(await screen.findByText('Registration failed. User might already exist.')).toBeInTheDocument();
   });
 });
