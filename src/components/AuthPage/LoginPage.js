@@ -31,6 +31,10 @@ function LoginPage() {
       if (response.status === 200) {
         setMessage('Login successful!');
         setLoading(false);  // Ensure loading is stopped after login
+        // Inside LoginPage.js after login
+        console.log('Login successful. Navigating to mood...');
+        console.log('Access token set in cookie:', document.cookie);
+        navigate('/mood');
         navigate('/mood');  // Redirect to mood page
       } else {
         setLoading(false);

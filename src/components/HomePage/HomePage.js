@@ -15,6 +15,7 @@ const HomePage = () => {
 
     useEffect(() => {
         const token = getCookie('access_token_cookie');
+        console.log('Token from cookie:', token);
         if (!token) {
             setError('User not authenticated. Please log in.');
             navigate('/login');
