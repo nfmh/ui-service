@@ -29,7 +29,7 @@ function LoginPage() {
     .then(() => {
       setLoading(false);
       setMessage('Login successful!');
-      navigate('/home');  // Redirect to home page
+      navigate('/mood');  // Redirect to home page
     })
     .catch(() => {
       setLoading(false);
