@@ -14,7 +14,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = getCookie('access_token_cookie');  // Use cookie for authentication
+        const token = getCookie('access_token_cookie');
         if (!token) {
             setError('User not authenticated. Please log in.');
             navigate('/login');
@@ -35,19 +35,19 @@ const HomePage = () => {
     const fetchMoodInfo = async () => {
         try {
             const token = getCookie('access_token_cookie');
-            const csrfToken = await fetchCSRFToken();  // Fetch CSRF token
+            const csrfToken = await fetchCSRFToken();
             const response = await axios.post(
-              `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
-              { mood }, 
-              {
-                headers: { 
-                  Authorization: `Bearer ${token}`,
-                  'X-CSRFToken': csrfToken
-                },
-                withCredentials: true
-              }
+                `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
+                { mood }, 
+                {
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'X-CSRFToken': csrfToken
+                    },
+                    withCredentials: true
+                }
             );
-    
+
             if (response.data) {
                 setMoodInfo({
                     quote: response.data.quote,
@@ -64,14 +64,16 @@ const HomePage = () => {
     };
 
     const handleMoodChange = (e) => setMood(e.target.value);
+    
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        document.cookie = "access_token_cookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate('/login');
     };
+
     const handleSongSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = getCookie('token');
+            const token = getCookie('access_token_cookie');
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -107,7 +109,7 @@ const HomePage = () => {
             {message && <div className="home-message success">{message}</div>}
             {moodInfo.quote && <div className="home-quote">{moodInfo.quote}</div>}
             {moodInfo.imageUrl && <img src={moodInfo.imageUrl} alt="Mood" className="home-image" />}
-          {moodInfo.songs.length > 0 && (
+            {moodInfo.songs.length > 0 && (
                 <>
                     <div className="songs-header">Here are some songs that will help you make it through the day</div>
                     <table className="songs-table">
@@ -129,32 +131,32 @@ const HomePage = () => {
                 </>
             )}
 
-        <div className="add-song-section">
-            <h2>Would you like to add a song?</h2>
-            <form onSubmit={handleSongSubmit}>
-                <div className="form-group">
-                    <label htmlFor="songTitle">Song Title</label>
-                    <input
-                        id="songTitle"
-                        type="text"
-                        value={songTitle}
-                        onChange={(e) => setSongTitle(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="songUrl">Song URL</label>
-                    <input
-                        id="songUrl"
-                        type="text"
-                        value={songUrl}
-                        onChange={(e) => setSongUrl(e.target.value)}
-                        required
-                    />
-                </div>
-                <Button type="submit" label="Add Song" className="add-song-button" />
-            </form>
-        </div>
+            <div className="add-song-section">
+                <h2>Would you like to add a song?</h2>
+                <form onSubmit={handleSongSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="songTitle">Song Title</label>
+                        <input
+                            id="songTitle"
+                            type="text"
+                            value={songTitle}
+                            onChange={(e) => setSongTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="songUrl">Song URL</label>
+                        <input
+                            id="songUrl"
+                            type="text"
+                            value={songUrl}
+                            onChange={(e) => setSongUrl(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <Button type="submit" label="Add Song" className="add-song-button" />
+                </form>
+            </div>
         </div>
     );
 };

@@ -20,7 +20,7 @@ function LoginPage() {
 
   const handleLogin = async () => {
     setLoading(true);
-    const csrfToken = await fetchCSRFToken();  // Fetch CSRF token
+    const csrfToken = await fetchCSRFToken();
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, 
@@ -28,12 +28,12 @@ function LoginPage() {
         { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }
       );
 
-      // Check if response contains success message
       if (response.status === 200) {
         setMessage('Login successful!');
-        // Navigate to mood page
-        navigate('/mood');  // Ensure this route exists in your app
+        setLoading(false);  // Ensure loading is stopped after login
+        navigate('/mood');  // Redirect to mood page
       } else {
+        setLoading(false);
         setMessage('Login failed. Invalid credentials.');
       }
     } catch (error) {
@@ -44,7 +44,7 @@ function LoginPage() {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleLogin();  // Submit on pressing Enter
+      handleLogin();
     }
   };
 
