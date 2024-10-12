@@ -10,28 +10,32 @@ import './AuthPage.css';
 function LoginPage() {
   const { username, password, handleUsernameChange, handlePasswordChange } = useForm();
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);  // Added loading state
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setLoading(true);  // Show loading state
-    axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, { username, password })
-      .then(res => {
-        setLoading(false);  // Remove loading state
-        const token = res.data.token;
-        if (token) {
-          document.cookie = `token=${token}; path=/; secure; HttpOnly; SameSite=Strict`;
-          setMessage('Login successful!');
-          navigate('/home');
-        } else {
-          setMessage('Login failed: No token received.');
-        }
-      })
-      .catch(() => {
-        setLoading(false);  // Remove loading state
-        setMessage('Login failed. Please check your credentials.');
-      });
-  };  
+  const fetchCSRFToken = async () => {
+    const response = await axios.get(`${process.env.REACT_APP_USER_API_URL}/csrf-token`, { withCredentials: true });
+    return response.data.csrf_token;
+  };
+
+  const handleLogin = async () => {
+    setLoading(true);
+    const csrfToken = await fetchCSRFToken();  // Fetch CSRF token
+
+    axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, 
+      { username, password }, 
+      { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }  // Include CSRF token in headers
+    )
+    .then(() => {
+      setLoading(false);
+      setMessage('Login successful!');
+      navigate('/home');  // Redirect to home page
+    })
+    .catch(() => {
+      setLoading(false);
+      setMessage('Login failed. Please check your credentials.');
+    });
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -50,7 +54,7 @@ function LoginPage() {
           onChange={handleUsernameChange}
           className="auth-input"
           aria-label="Enter your username"
-          onKeyPress={handleKeyPress}  // Trigger login on Enter
+          onKeyPress={handleKeyPress}
         />
         <Input
           type="password"
@@ -59,7 +63,7 @@ function LoginPage() {
           onChange={handlePasswordChange}
           className="auth-input"
           aria-label="Enter your password"
-          onKeyPress={handleKeyPress}  // Trigger login on Enter
+          onKeyPress={handleKeyPress}
         />
         <Button onClick={handleLogin} label={loading ? 'Logging in...' : 'Login'} className="auth-button" disabled={loading} />
         {message && <ErrorMessage message={message} />}

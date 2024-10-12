@@ -13,20 +13,31 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);  // Added loading state
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    setLoading(true);  // Set loading to true
-    axios.post(`${process.env.REACT_APP_USER_API_URL}/register`, { username, password })
-      .then(() => {
-        setLoading(false);  // Set loading to false
-        setMessage('Registration successful! You can now log in.');
-        navigate('/login'); // Redirect to login page after successful registration
-      })
-      .catch(() => {
-        setLoading(false);  // Set loading to false
-        setMessage('Registration failed. User might already exist.');
-        handlePasswordChange({ target: { value: '' } }); // Clear password field on error
-      });
+  const fetchCSRFToken = async () => {
+    const response = await axios.get(`${process.env.REACT_APP_USER_API_URL}/csrf-token`, { withCredentials: true });
+    return response.data.csrf_token;
   };
+  
+  const handleRegister = async () => {
+    setLoading(true); 
+    const csrfToken = await fetchCSRFToken();  // Fetch CSRF token
+  
+    axios.post(`${process.env.REACT_APP_USER_API_URL}/register`, 
+      { username, password }, 
+      { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }  // Include CSRF token in headers
+    )
+    .then(() => {
+      setLoading(false);  
+      setMessage('Registration successful! You can now log in.');
+      navigate('/login'); 
+    })
+    .catch(() => {
+      setLoading(false);  
+      setMessage('Registration failed. User might already exist.');
+      handlePasswordChange({ target: { value: '' } }); 
+    });
+  };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
