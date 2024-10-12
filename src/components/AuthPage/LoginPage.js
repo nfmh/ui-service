@@ -22,19 +22,24 @@ function LoginPage() {
     setLoading(true);
     const csrfToken = await fetchCSRFToken();  // Fetch CSRF token
 
-    axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, 
-      { username, password }, 
-      { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }  // Include CSRF token in headers
-    )
-    .then(() => {
-      setLoading(false);
-      setMessage('Login successful!');
-      navigate('/mood');  // Redirect to home page
-    })
-    .catch(() => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, 
+        { username, password }, 
+        { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }
+      );
+
+      // Check if response contains success message
+      if (response.status === 200) {
+        setMessage('Login successful!');
+        // Navigate to mood page
+        navigate('/mood');  // Ensure this route exists in your app
+      } else {
+        setMessage('Login failed. Invalid credentials.');
+      }
+    } catch (error) {
       setLoading(false);
       setMessage('Login failed. Please check your credentials.');
-    });
+    }
   };
 
   const handleKeyPress = (e) => {
