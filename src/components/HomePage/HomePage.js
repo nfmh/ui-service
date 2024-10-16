@@ -17,6 +17,10 @@ const HomePage = () => {
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
+        const cookieArray = document.cookie.split('; ');
+        const cookie = cookieArray.find(c => c.startsWith(`${name}=`));
+        cookie.log(cookie)
+        console.log(cookieArray)
         console.log(name);
         console.log(value);
         if (parts.length === 2) return parts.pop().split(';').shift();
