@@ -49,10 +49,7 @@ const HomePage = () => {
                 `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
                 { mood }, 
                 {
-                    headers: { 
-                      'X-CSRFToken': csrfToken
-                    },
-                    withCredentials: true  // Send cookies, including the HttpOnly access token
+                    withCredentials: true 
                 }
             );
     
