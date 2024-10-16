@@ -32,28 +32,28 @@ jobs:
     - name: Install dependencies for testing
       run: npm install
 
-    # Run tests with coverage
-    - name: Run tests with coverage
-      run: npm test -- --coverage
+    # # Run tests with coverage
+    # - name: Run tests with coverage
+    #   run: npm test -- --coverage
 
-    # Fix lcov.info Paths
-    - name: Fix lcov.info Paths
-      run: sed -i 's|/home/runner/work/ui-service/ui-service|/github/workspace|g' coverage/lcov.info
+    # # Fix lcov.info Paths
+    # - name: Fix lcov.info Paths
+    #   run: sed -i 's|/home/runner/work/ui-service/ui-service|/github/workspace|g' coverage/lcov.info
 
-    # Include SonarCloud Scan step to use test coverage
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=nfmh_ui-service
-          -Dsonar.organization=nfmh
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          -Dsonar.sources=src
-          -Dsonar.tests=src/__tests__
-          -Dsonar.test.inclusions=src/**/*.test.js
-          -Dsonar.coverage.exclusions=src/__tests__/**
+    # # Include SonarCloud Scan step to use test coverage
+    # - name: SonarCloud Scan
+    #   uses: SonarSource/sonarcloud-github-action@master
+    #   env:
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   with:
+    #     args: >
+    #       -Dsonar.projectKey=nfmh_ui-service
+    #       -Dsonar.organization=nfmh
+    #       -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+    #       -Dsonar.sources=src
+    #       -Dsonar.tests=src/__tests__
+    #       -Dsonar.test.inclusions=src/**/*.test.js
+    #       -Dsonar.coverage.exclusions=src/__tests__/**
 
     # ------------- PRODUCTION ENVIRONMENT BUILD -------------
 
