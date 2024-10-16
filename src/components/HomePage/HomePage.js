@@ -22,10 +22,14 @@ const HomePage = () => {
         }
     }, [navigate]);
 
+// Improved getCookie function
     const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
+        const cookieArray = document.cookie.split(';');
+        const cookie = cookieArray.find(c => c.trim().startsWith(`${name}=`));
+        if (cookie) {
+        return cookie.split('=')[1];  // Return the value of the cookie
+        }
+        return null;  // Return null if the cookie is not found
     };
 
     const fetchCSRFToken = async () => {
