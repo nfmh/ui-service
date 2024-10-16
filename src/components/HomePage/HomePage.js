@@ -17,6 +17,8 @@ const HomePage = () => {
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
+        console.log(name);
+        console.log(value);
         if (parts.length === 2) return parts.pop().split(';').shift();
         return null;  // Return null if the cookie is not found
     };
