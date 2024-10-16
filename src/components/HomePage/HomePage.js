@@ -15,16 +15,17 @@ const HomePage = () => {
 
     // Improved getCookie function
     const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        const cookieArray = document.cookie.split('; ');
-        const cookie = cookieArray.find(c => c.startsWith(`${name}=`));
-        cookie.log(cookie)
-        console.log(cookieArray)
-        console.log(name);
-        console.log(value);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;  // Return null if the cookie is not found
+        const cookies = document.cookie.split(';');
+        console.log(cookies)
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            console.log(cookie)
+            if (cookie.startsWith(`${name}=`)) {
+                console.log(cookie.substring(name.length + 1))
+                return cookie.substring(name.length + 1); // Get value after the "="
+            }
+        }
+        return null; // If the cookie isn't found
     };
         
 
