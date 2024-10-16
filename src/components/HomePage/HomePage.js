@@ -13,32 +13,25 @@ const HomePage = () => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
-    // Improved getCookie function
-    const getCookie = (name) => {
-        const cookies = document.cookie.split(';');
-        console.log(cookies)
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            console.log(cookie)
-            if (cookie.startsWith(`${name}=`)) {
-                console.log(cookie.substring(name.length + 1))
-                return cookie.substring(name.length + 1); // Get value after the "="
-            }
-        }
-        return null; // If the cookie isn't found
-    };
-        
-
     useEffect(() => {
-        const token = getCookie('access_token_cookie');
-        console.log('Token from cookie:', token);
-        if (!token) {
-            setError('User not authenticated. Please log in.');
-            navigate('/login');
-        }
+        const checkAuthentication = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_USER_API_URL}/profile`, {
+                    withCredentials: true  // Ensures that cookies are sent
+                });
+                if (response.status === 200) {
+                    console.log('User is authenticated');
+                }
+            } catch (error) {
+                console.log('User is not authenticated. Redirecting to login.');
+                setError('User not authenticated. Please log in.');
+                navigate('/login');
+            }
+        };
+    
+        checkAuthentication();
     }, [navigate]);
-
-
+    
     const fetchCSRFToken = async () => {
         const response = await axios.get(`${process.env.REACT_APP_MOOD_API_URL}/csrf-token`, { withCredentials: true });
         return response.data.csrf_token;
@@ -46,20 +39,18 @@ const HomePage = () => {
 
     const fetchMoodInfo = async () => {
         try {
-            const token = getCookie('access_token_cookie');
-            const csrfToken = await fetchCSRFToken();
+            const csrfToken = await fetchCSRFToken(); // Fetch CSRF token
             const response = await axios.post(
                 `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
                 { mood }, 
                 {
                     headers: { 
-                        Authorization: `Bearer ${token}`,
                         'X-CSRFToken': csrfToken
                     },
-                    withCredentials: true  // Send cookies
+                    withCredentials: true  // Send cookies, including the HttpOnly access token
                 }
             );
-
+    
             if (response.data) {
                 setMoodInfo({
                     quote: response.data.quote,
@@ -74,7 +65,7 @@ const HomePage = () => {
             setError(err.response?.status === 401 ? 'Unauthorized. Please log in again.' : 'Error fetching mood information.');
         }
     };
-
+    
     const handleMoodChange = (e) => setMood(e.target.value);
     
     const handleLogout = () => {
