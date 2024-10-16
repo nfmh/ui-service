@@ -35,7 +35,6 @@ function LoginPage() {
         console.log('Login successful. Navigating to mood...');
         console.log('Access token set in cookie:', document.cookie);
         navigate('/mood');
-        navigate('/mood');  // Redirect to mood page
       } else {
         setLoading(false);
         setMessage('Login failed. Invalid credentials.');
