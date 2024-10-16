@@ -45,7 +45,7 @@ const HomePage = () => {
                         Authorization: `Bearer ${token}`,
                         'X-CSRFToken': csrfToken
                     },
-                    withCredentials: true
+                    withCredentials: true  // Send cookies
                 }
             );
 
@@ -77,7 +77,8 @@ const HomePage = () => {
             const token = getCookie('access_token_cookie');
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true  // Ensure cookies are sent
             });
 
             if (response.status === 201) {

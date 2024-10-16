@@ -25,15 +25,13 @@ function LoginPage() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_USER_API_URL}/login`, 
         { username, password }, 
-        { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true }
+        { headers: { 'X-CSRFToken': csrfToken }, withCredentials: true } // Important to send credentials
       );
 
       if (response.status === 200) {
         setMessage('Login successful!');
-        setLoading(false);  // Ensure loading is stopped after login
-        // Inside LoginPage.js after login
+        setLoading(false);  
         console.log('Login successful. Navigating to mood...');
-        console.log('Access token set in cookie:', document.cookie);
         navigate('/mood');
       } else {
         setLoading(false);
