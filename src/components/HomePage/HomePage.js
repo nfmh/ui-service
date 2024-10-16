@@ -39,15 +39,18 @@ const HomePage = () => {
 
     const fetchMoodInfo = async () => {
         try {
-            const csrfToken = await fetchCSRFToken(); // Fetch CSRF token
+            const csrfToken = await fetchCSRFToken();
+            console.log('CSRF Token from response:', csrfToken);
+    
+            const cookieToken = document.cookie.split('; ').find(row => row.startsWith('csrf_token=')).split('=')[1];
+            console.log('CSRF Token from cookie:', cookieToken);
+    
             const response = await axios.post(
                 `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
                 { mood }, 
                 {
                     headers: { 
-                        //'X-CSRFToken': csrfToken,
-                        'X-CSRF-TOKEN': csrfToken,  // Alternatively, try this if the above fails
-      // 'X-XSRF-TOKEN': csrfToken 
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     withCredentials: true  // Send cookies, including the HttpOnly access token
                 }
@@ -67,6 +70,7 @@ const HomePage = () => {
             setError(err.response?.status === 401 ? 'Unauthorized. Please log in again.' : 'Error fetching mood information.');
         }
     };
+    
     
     const handleMoodChange = (e) => setMood(e.target.value);
     
