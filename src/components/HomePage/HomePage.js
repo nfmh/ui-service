@@ -13,6 +13,15 @@ const HomePage = () => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
+    // Improved getCookie function
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;  // Return null if the cookie is not found
+    };
+        
+
     useEffect(() => {
         const token = getCookie('access_token_cookie');
         console.log('Token from cookie:', token);
@@ -22,15 +31,6 @@ const HomePage = () => {
         }
     }, [navigate]);
 
-// Improved getCookie function
-    const getCookie = (name) => {
-        const cookieArray = document.cookie.split(';');
-        const cookie = cookieArray.find(c => c.trim().startsWith(`${name}=`));
-        if (cookie) {
-        return cookie.split('=')[1];  // Return the value of the cookie
-        }
-        return null;  // Return null if the cookie is not found
-    };
 
     const fetchCSRFToken = async () => {
         const response = await axios.get(`${process.env.REACT_APP_MOOD_API_URL}/csrf-token`, { withCredentials: true });
