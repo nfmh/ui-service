@@ -84,6 +84,9 @@ const HomePage = () => {
         try {
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
+                headers: { 
+                    'X-CSRFToken': csrfToken
+                  },
                 withCredentials: true  // Ensure cookies are sent
             });
     
