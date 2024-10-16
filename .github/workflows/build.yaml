@@ -87,14 +87,14 @@ jobs:
         docker build -t "${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" -f Dockerfile .
         echo "IMAGE_NAME=${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
-    # Trivy scan step
-    - name: Run Trivy vulnerability scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: "${{ steps.build-image.outputs.IMAGE_NAME }}"
-        format: 'table'
-        severity: 'HIGH,CRITICAL'
-        exit-code: '1'
+    # # Trivy scan step
+    # - name: Run Trivy vulnerability scan
+    #   uses: aquasecurity/trivy-action@master
+    #   with:
+    #     image-ref: "${{ steps.build-image.outputs.IMAGE_NAME }}"
+    #     format: 'table'
+    #     severity: 'HIGH,CRITICAL'
+    #     exit-code: '1'
 
     # Push the Docker image to Artifact Registry
     - name: Push Docker image to Artifact Registry

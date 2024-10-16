@@ -50,7 +50,7 @@ const HomePage = () => {
                 { mood }, 
                 {
                     headers: { 
-                        'X-CSRF-TOKEN': csrfToken
+                       'X-XSRF-TOKEN': csrfToken
                     },
                     withCredentials: true  // Send cookies, including the HttpOnly access token
                 }
