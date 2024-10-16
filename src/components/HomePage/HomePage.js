@@ -76,13 +76,11 @@ const HomePage = () => {
     const handleSongSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = getCookie('access_token_cookie');
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
-                headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true  // Ensure cookies are sent
             });
-
+    
             if (response.status === 201) {
                 setMessage('New song added successfully.');
                 setError('');
@@ -95,6 +93,7 @@ const HomePage = () => {
             setError(err.response?.status === 404 ? 'Mood not found.' : 'Error adding song.');
         }
     };
+    
 
     return (
         <div className="home-container">
