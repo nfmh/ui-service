@@ -49,7 +49,10 @@ const HomePage = () => {
                 `${process.env.REACT_APP_MOOD_API_URL}/mood`, 
                 { mood }, 
                 {
-                    withCredentials: true 
+                    headers: { 
+                      'X-CSRFToken': csrfToken
+                    },
+                    withCredentials: true  // Send cookies, including the HttpOnly access token
                 }
             );
     
@@ -79,12 +82,8 @@ const HomePage = () => {
     const handleSongSubmit = async (e) => {
         e.preventDefault();
         try {
-            const csrfToken = await fetchCSRFToken();
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
-                headers: { 
-                    'X-CSRFToken': csrfToken
-                  },
                 withCredentials: true  // Ensure cookies are sent
             });
     
