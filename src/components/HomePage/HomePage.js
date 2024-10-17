@@ -82,9 +82,12 @@ const HomePage = () => {
     const handleSongSubmit = async (e) => {
         e.preventDefault();
         try {
+            const csrfToken = await fetchCSRFToken();
             const response = await axios.post(`${process.env.REACT_APP_MOOD_API_URL}/song`, 
             { mood: mood, title: songTitle, url: songUrl }, {
-                withCredentials: true  // Ensure cookies are sent
+                    headers: { 
+                      'X-CSRFToken': csrfToken
+                    },withCredentials: true  // Ensure cookies are sent
             });
     
             if (response.status === 201) {
